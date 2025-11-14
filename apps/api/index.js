@@ -1,13 +1,12 @@
 import express from 'express';
-import cors from 'cors'; // 1. Importe o pacote cors
+import cors from 'cors'; // Importe o pacote cors
 
 const app = express();
 
-// 2. Use o middleware ANTES das suas rotas
-// Isso permite que qualquer origem (como o seu PWA) acesse a API
+// Use o middleware ANTES das suas rotas
 app.use(cors()); 
 
-// Sua rota existente
+// Sua rota 
 app.get('/hello', (req, res) => {
   res.json({ message: 'Hello Bootcamp!' });
 });

@@ -1,10 +1,7 @@
 import { defineConfig } from 'vite'
+// ... outros imports
 
 export default defineConfig({
-  root: '.',
-  base: './',
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true
-  }
+  // ... outros plugins
+  //base: '/Bootcamp-Entrega-Final/', // <-- IMPORTANTE!
 })
