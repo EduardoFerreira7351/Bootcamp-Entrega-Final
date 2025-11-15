@@ -40,10 +40,11 @@ function App() {
     <div className="App">
       <h1>Meu PWA do Bootcamp</h1>
       
-      <button onClick={fetchData}>
+      {/* ADICIONE O data-testid AQUI */}
+      <button onClick={fetchData} data-testid="meu-botao">
         Chamar API (Buscar Pikachu)
       </button>
-
+      
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {message && (
         <p data-testid="api-message">
