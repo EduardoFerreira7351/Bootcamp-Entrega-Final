@@ -44,10 +44,13 @@ function App() {
       <button onClick={fetchData} data-testid="meu-botao">
         Chamar API (Buscar Pikachu)
       </button>
-      
+
+      {/* ...seu botão... */}
+
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {message && (
-        <p data-testid="api-message">
+        // MUDE ESTA LINHA:
+        <p data-testid="resultado-do-clique">
           <strong>{message}</strong>
         </p>
       )}
