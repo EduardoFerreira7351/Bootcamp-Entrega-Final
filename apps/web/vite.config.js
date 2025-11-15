@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
-// ... outros imports
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  // ... outros plugins
-  //base: '/Bootcamp-Entrega-Final/', // <-- IMPORTANTE!
+  plugins: [react()],
+  base: '/Bootcamp-Entrega-Final/', // <-- ADICIONE ESTA LINHA
 })

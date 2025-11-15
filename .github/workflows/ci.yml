@@ -1,8 +1,12 @@
-name: CI
+name: CI & Deploy
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "main" ] # Roda apenas quando você der push na 'main'
+  pull_request:
 
 jobs:
+  # Job 1: Buildar e Testar (como nos prints do professor)
   build-test:
     runs-on: ubuntu-latest
     steps:
@@ -14,57 +18,54 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Instalar deps
-        run: |
-          cd apps/web && npm ci
-          cd ../../apps/api && npm ci
+      - name: Instalar deps (API)
+        run: cd apps/api && npm ci
 
-      - name: Testes unitários (web/api)
-        run: |
-          cd apps/web && npm test -- --present
-          cd ../../apps/api && npm test -- --present
+      - name: Instalar deps (Web)
+        run: cd apps/web && npm ci
 
-      - name: Build web
-        run: |
-          cd apps/web && npm run build
+      - name: Testes unitários (API)
+        run: cd apps/api && npm test
 
-      - name: Lighthouse (opcional)
-        run: |
-          npm i -g @lhci/cli@0.13.x
-          lhci autorun || true
+      - name: Testes E2E (Web)
+        run: cd apps/web && npm run test:e2e
 
-      - name: Upload artefatos
+      - name: Build Web (com o 'base' correto)
+        run: cd apps/web && npm run build
+
+      - name: Upload artefato do build
         uses: actions/upload-artifact@v4
         with:
           name: web-dist
-          path: apps/web/dist
-          # ... (job 'build-test' continua igual) ...
+          path: apps/web/dist # A pasta que o 'npm run build' cria
 
+  # Job 2: Fazer o Deploy no GitHub Pages
   deploy-pages:
-    needs: build-test # Depende do job anterior
+    needs: build-test # Só roda se o 'build-test' passar
     runs-on: ubuntu-latest
+    
     permissions:
-      pages: write
-      id-token: write
+      pages: write      # Permissão para escrever no GitHub Pages
+      id-token: write   # Permissão para autenticar
 
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Download artifact
+      - name: Download artefato do build
         uses: actions/download-artifact@v4
         with:
-          name: web-dist
-          path: apps/web/dist
+          name: web-dist # O mesmo nome do upload
+          path: . # Baixa direto para a raiz
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: Upload artifact do Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'apps/web/dist'
+          path: '.' # A pasta raiz (onde baixamos o 'dist')
 
       - name: Deploy to GitHub Pages
         id: deployment

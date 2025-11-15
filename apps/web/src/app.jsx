@@ -1,58 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; // <-- Não precisamos mais do useEffect
 
-// 1. Pega a URL da API da variável de ambiente
+// 1. Pega a URL da API (isso fica igual)
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 function App() {
-  // Estado para guardar a mensagem da API
-  const [message, setMessage] = useState('Carregando dados da API...');
+  // 2. Mude a mensagem inicial
+  const [message, setMessage] = useState('API: não verificada');
   const [error, setError] = useState(null);
 
-  // useEffect roda quando o componente é montado
-  useEffect(() => {
-    // 3. Função para buscar os dados
-    const fetchData = async () => {
-      if (!API_URL) {
-        setError('A URL da API não está definida.');
-        return;
+  // 3. A função de buscar dados (fica quase igual, só tiramos ela de dentro do useEffect)
+  const fetchData = async () => {
+    setMessage('Carregando...'); // Avisa que está carregando
+    setError(null);
+
+    if (!API_URL) {
+      setError('A URL da API não está definida.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/hello`);
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.statusText}`);
       }
+      const data = await response.json();
+      setMessage(data.message); // Sucesso!
+      setError(null);
+    } catch (err) {
+      console.error('Falha ao buscar dados:', err);
+      setError('Não foi possível conectar à API.');
+      setMessage('');
+    }
+  };
 
-      try {
-        // 4. Faz o fetch para o endpoint /hello
-        const response = await fetch(`${API_URL}/hello`);
-
-        if (!response.ok) {
-          throw new Error(`Erro na API: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        // 5. Atualiza o estado com a mensagem da API
-        setMessage(data.message);
-        setError(null);
-
-      } catch (err) {
-        console.error('Falha ao buscar dados:', err);
-        setError('Não foi possível conectar à API. Você iniciou o backend?');
-        setMessage('');
-      }
-    };
-
-    fetchData(); // Chama a função
-  }, []); // O array vazio [] faz o useEffect rodar só uma vez
+  // 4. O useEffect FOI REMOVIDO
 
   return (
     <div className="App">
       <h1>Meu PWA do Bootcamp</h1>
+      {/* (Opcional) Você pode tirar o "TESTE GIGANTE" agora */}
+      
+      {/* 5. Adicione o botão e a mensagem */}
+      <button onClick={fetchData}>
+        Chamar API
+      </button>
 
-      {/* Mostra a mensagem de erro ou a mensagem da API */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {message && (
         <p data-testid="api-message">
           Mensagem da API: <strong>{message}</strong>
         </p>
       )}
-
     </div>
   );
 }
