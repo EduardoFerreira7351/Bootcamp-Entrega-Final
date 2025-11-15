@@ -24,6 +24,9 @@ jobs:
       - name: Instalar deps (Web)
         run: cd apps/web && npm ci
 
+      - name: Instalar navegadores Playwright
+        run: cd apps/web && npx playwright install --with-deps
+
       - name: Testes unitários (API)
         run: cd apps/api && npm test
 
