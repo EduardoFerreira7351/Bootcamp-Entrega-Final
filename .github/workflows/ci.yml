@@ -7,7 +7,7 @@ on:
 
 jobs:
   # Job 1: Buildar e Testar (como nos prints do professor)
-  build-test:
+ build-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,31 +19,43 @@ jobs:
           node-version: '20'
 
       - name: Instalar deps (API)
-        run: cd apps/api && npm ci
+        run: cd apps/api && npm install # Usando install como antes
 
       - name: Instalar deps (Web)
-        run: cd apps/web && npm install 
+        run: cd apps/web && npm install # Usando install como antes
 
       - name: Instalar navegadores Playwright
         run: cd apps/web && npx playwright install --with-deps
 
       - name: Testes unitários (API)
-        run: cd apps/api && npm test
+        run: cd apps/api && npm test # A pasta do build que já fizemos
+
+      # --- BLOCO DE MUDANÇA ---
+
+      - name: Build Web (para o teste)
+        run: cd apps/web && npm run build
+
+      - name: Iniciar servidor de preview
+        run: cd apps/web && npm run preview -- --port 8080 & # O '&' roda em background
+        
+      - name: Esperar o servidor ligar
+        run: sleep 10 # Dá 10 segundos para o servidor Vite iniciar
 
       - name: Testes E2E (Web)
-        run: cd apps/web && npm run test:e2e
-
-      - name: Build Web (com o 'base' correto)
-        run: cd apps/web && npm run build
+        run: cd apps/web && npx npm run test:e2e
+        env:
+          # Força o teste a usar a URL correta (que o seu spec.js já lê)
+          VITE_BASE_URL: 'http://localhost:8080' 
+          
+      # --- FIM DO BLOCO DE MUDANÇA ---
 
       - name: Upload artefato do build
         uses: actions/upload-artifact@v4
         with:
           name: web-dist
-          path: apps/web/dist # A pasta que o 'npm run build' cria
-
+          path: apps/web/dist # A pasta do build que já fizemos
   # Job 2: Fazer o Deploy no GitHub Pages
-  deploy-pages:
+ deploy-pages:
     needs: build-test # Só roda se o 'build-test' passar
     runs-on: ubuntu-latest
     
