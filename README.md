@@ -3,7 +3,6 @@
 Este projeto é a entrega final do Bootcamp, que consiste em uma aplicação PWA (Progressive Web App) completa, conectada a um backend (API), totalmente containerizada com Docker e com um pipeline de Integração Contínua (CI/CD) no GitHub Actions.
 
 **Link do PWA (GitHub Pages):** `Link: https://eduardoferreira7351.github.io/Bootcamp-Entrega-Final/`
-**Link do Vídeo/GIF (3 min):** `[URL-DO-VIDEO-OU-GIF-AQUI]`
 
 ---
 
